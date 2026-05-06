@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>{{ producto.titulo }}</h2>
+
+{% if producto.foto_url %} <img src="{{ producto.foto_url }}" style="width:300px;">
+{% endif %}
+
+<p>{{ producto.descripcion }}</p>
+
+<p><strong>{{ producto.precio }} €</strong></p>
+
+<p>
+    Categoría:
+    {% if producto.categoria %}
+    {{ producto.categoria.nombre }}
+    {% else %}
+    Sin categoría
+    {% endif %}
+</p>
+
+<p>Vendedor: 👤 {{ producto.vendedor.nombre }}</p>
+
+<hr>
+
+<p>
+    Valoración:
+    {% if media %}
+    {{ media|round(1) }} ⭐
+    {% else %}
+    Sin valoraciones
+    {% endif %}
+</p>
+
+<h3>Valorar vendedor</h3>
+
+{% if session.get("user_id") %}
+{% if session.get("user_id") != producto.vendedor_id %}
+
+<form id="form-valorar">
+    <input type="hidden" id="producto_id" value="{{ producto.id }}">
+    <input type="hidden" id="vendedor_id" value="{{ producto.vendedor_id }}">
+
+    <select id="puntuacion">
+        <option value="5">⭐⭐⭐⭐⭐</option>
+        <option value="4">⭐⭐⭐⭐</option>
+        <option value="3">⭐⭐⭐</option>
+        <option value="2">⭐⭐</option>
+        <option value="1">⭐</option>
+    </select>
+
+    <textarea id="comentario" placeholder="Comentario"></textarea>
+
+    <button type="submit">Valorar</button>
+</form>
+
+<p id="resultado"></p>
+
+{% else %}
+<p>No puedes valorar tu propio producto</p>
+{% endif %}
+
+{% else %} <a href="/login">Inicia sesión para valorar</a>
+{% endif %}
+
+<hr>
+
+<h3>Opiniones</h3>
+
+<div class="opiniones">
+    {% for v in valoraciones %}
+    <div class="opinion">
+        <div class="opinion-header">
+            👤 {{ v.autor.nombre }}
+        </div>
+
+
+        <strong>{{ v.puntuacion }} ⭐</strong>
+        <p>{{ v.comentario }}</p>
+    </div>
+    {% endfor %}
+
+
+</div>
+
+<hr>
+<h3>Comprar</h3>
+
+{% if session.get("user_id") %}
+{% if session.get("user_id") != producto.vendedor_id %}
+
+<div id="paypal-button-container" data-producto-id="{{ producto.id }}" data-precio="{{ producto.precio }}">
+</div>
+
+<p>USER: {{ session.get("user_id") }}</p>
+<p>VENDEDOR: {{ producto.vendedor_id }}</p>
+{% else %}
+<p>No puedes comprar tu propio producto</p>
+{% endif %}
+
+{% else %} <a href="/login">Inicia sesión para comprar</a>
+{% endif %}
+
+{% endblock %}
+
+{% block scripts %}
+
+<script src="{{ url_for('static', filename='js/valorar.js') }}"></script>
+
+<script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id }}&currency=EUR"></script>
+
+<script src="{{ url_for('static', filename='js/compra.js') }}"></script>
+
+{% endblock %}

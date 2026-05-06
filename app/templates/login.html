@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<h2>Login</h2>
+
+<form id="form">
+    <input type="email" id="email" placeholder="Email" required><br><br>
+    <input type="password" id="password" placeholder="Password" required><br><br>
+
+    <button type="submit">Entrar</button>
+
+</form>
+
+<a href="/recuperar" class="recuperar">
+    Olvidaste tu contraseña?
+</a>
+
+
+<p id="resultado"></p>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+{% endblock %}

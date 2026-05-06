@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Productos</h1>
+
+
+<form id="filtros-home" class="filtros">
+
+    <input type="text" id="busqueda" placeholder="Buscar productos...">
+
+    <select id="categoria">
+        <option value="">Todas las categorías</option>
+        {% for c in categorias %}
+            <option value="{{ c.id }}">{{ c.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Buscar</button>
+
+</form>
+
+
+<div class="grid">
+
+    {% for p in productos %}
+        <a href="/producto/{{ p.id }}" class="card-link">
+            <div class="card">
+
+                <div class="vendedor">
+                    👤 {{ p.vendedor.nombre }}
+                </div>
+
+                {% if p.foto_url %}
+                    <img src="{{ p.foto_url }}" class="img-producto">
+                {% endif %}
+
+                <h3>{{ p.titulo }}</h3>
+                <p>{{ p.descripcion }}</p>
+                <strong>{{ p.precio }} €</strong>
+
+            </div>
+        </a>
+    {% endfor %}
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/home.js') }}"></script>
+{% endblock %}

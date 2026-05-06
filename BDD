@@ -1,0 +1,263 @@
+DROP DATABASE IF EXISTS vayven;
+CREATE DATABASE vayven;
+use vayven;
+-- =========================================
+-- TABLA: usuarios
+-- =========================================
+CREATE TABLE usuarios (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL,
+  email VARCHAR(150) UNIQUE NOT NULL,
+  password_hash VARCHAR(255) NOT NULL,
+  rol TEXT CHECK (rol IN ('usuario', 'admin')) DEFAULT 'usuario',
+  activo BOOLEAN DEFAULT true,
+  creacion TIMESTAMPTZ DEFAULT now()
+);
+
+-- =========================================
+-- TABLA: contrasena_resets
+-- =========================================
+CREATE TABLE contrasena_resets (
+  id SERIAL PRIMARY KEY,
+  usuario_id INTEGER NOT NULL,
+  token VARCHAR(255),
+  creacion TIMESTAMPTZ DEFAULT now(),
+
+  CONSTRAINT fk_contrasena_usuario
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
+);
+
+-- =========================================
+-- TABLA: productos
+-- =========================================
+CREATE TABLE productos (
+  id SERIAL PRIMARY KEY,
+  vendedor_id INTEGER NOT NULL,
+  titulo VARCHAR(200) NOT NULL,
+  descripcion TEXT,
+  precio NUMERIC(10,2) NOT NULL,
+  categoria_id INTEGER,
+  foto BYTEA, 
+  creacion TIMESTAMPTZ DEFAULT now(),
+
+  CONSTRAINT fk_producto_vendedor
+    FOREIGN KEY (vendedor_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_producto_categoria
+    FOREIGN KEY (categoria_id)
+    REFERENCES categorias(id)
+    ON DELETE SET NULL
+);
+
+-- =========================================
+-- TABLA: Pagos
+-- =========================================
+CREATE TABLE pagos (
+  id SERIAL PRIMARY KEY,
+  venta_id INTEGER NOT NULL,
+
+  paypal_order_id VARCHAR(255),
+  payer_email VARCHAR(255),
+
+  amount NUMERIC(10,2) NOT NULL,
+  currency VARCHAR(10) DEFAULT 'EUR',
+
+  status TEXT CHECK (status IN ('pending', 'completed', 'failed', 'refunded')) DEFAULT 'pending',
+
+  creacion TIMESTAMPTZ DEFAULT now(),
+
+  CONSTRAINT fk_pago_venta
+    FOREIGN KEY (venta_id)
+    REFERENCES ventas(id)
+    ON DELETE CASCADE
+);
+
+-- =========================================
+-- TABLA: Envio
+-- =========================================
+CREATE TABLE envios (
+  id SERIAL PRIMARY KEY,
+  venta_id INTEGER NOT NULL,
+
+  direccion VARCHAR(255) NOT NULL,
+  ciudad VARCHAR(100) NOT NULL,
+  codigo_postal VARCHAR(20) NOT NULL,
+  pais VARCHAR(100) NOT NULL,
+
+  estado TEXT CHECK (estado IN ('pendiente', 'enviado', 'entregado')) DEFAULT 'pendiente',
+
+  tracking_codigo VARCHAR(100),
+
+  creacion TIMESTAMPTZ DEFAULT now(),
+
+  CONSTRAINT fk_envio_venta
+    FOREIGN KEY (venta_id)
+    REFERENCES ventas(id)
+    ON DELETE CASCADE
+);
+
+-- =========================================
+-- TABLA: Ventas
+-- =========================================
+
+CREATE TABLE reclamaciones (
+  id SERIAL PRIMARY KEY,
+  venta_id INTEGER NOT NULL,
+  usuario_id INTEGER NOT NULL,
+
+  motivo TEXT NOT NULL,
+
+  estado TEXT CHECK (estado IN ('abierta', 'en_revision', 'resuelta', 'rechazada')) DEFAULT 'abierta',
+
+  creacion TIMESTAMPTZ DEFAULT now(),
+
+  CONSTRAINT fk_reclamacion_venta
+    FOREIGN KEY (venta_id)
+    REFERENCES ventas(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_reclamacion_usuario
+    FOREIGN KEY (usuario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE
+);
+
+-- =========================================
+-- TABLA: categorias
+-- =========================================
+
+CREATE TABLE categorias (
+  id SERIAL PRIMARY KEY,
+  nombre VARCHAR(100) NOT NULL UNIQUE
+);
+
+
+-- =========================================
+-- TABLA: ventas
+-- =========================================
+CREATE TABLE ventas (
+  id SERIAL PRIMARY KEY,
+
+  comprador_id INTEGER NOT NULL,
+  producto_id INTEGER NOT NULL,
+
+  precio NUMERIC(10,2) NOT NULL,
+
+  estado TEXT CHECK (
+    estado IN ('pendiente', 'pagado', 'enviado', 'entregado', 'cancelado')
+  ) DEFAULT 'pendiente',
+
+  fecha_completado TIMESTAMPTZ,
+
+  creacion TIMESTAMPTZ DEFAULT now(),
+
+  CONSTRAINT fk_ventas_comprador
+    FOREIGN KEY (comprador_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_ventas_producto
+    FOREIGN KEY (producto_id)
+    REFERENCES productos(id)
+    ON DELETE CASCADE
+);
+-- =========================================
+-- TABLA: valoraciones
+-- =========================================
+CREATE TABLE valoraciones (
+  id SERIAL PRIMARY KEY,
+  autor_id INTEGER NOT NULL,
+  destinatario_id INTEGER NOT NULL,
+  puntuacion INTEGER NOT NULL CHECK (puntuacion BETWEEN 1 AND 5),
+  comentario TEXT,
+  creacion TIMESTAMPTZ DEFAULT now(),
+
+  CONSTRAINT fk_valoracion_autor
+    FOREIGN KEY (autor_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT fk_valoracion_destinatario
+    FOREIGN KEY (destinatario_id)
+    REFERENCES usuarios(id)
+    ON DELETE CASCADE,
+
+  CONSTRAINT unique_valoracion
+    UNIQUE (autor_id, destinatario_id),
+
+  CONSTRAINT no_autovaloracion
+    CHECK (autor_id <> destinatario_id)
+);
+
+-- =====================
+-- Categoria
+-- =====================
+INSERT INTO categorias (nombre) VALUES
+('Coches'),
+('Motos'),
+('Furgonetas'),
+('Caravanas'),
+('Accesorios vehículos'),
+
+('Electrónica'),
+('Móviles'),
+('Tablets'),
+('Ordenadores'),
+('Componentes PC'),
+('Videojuegos'),
+('Consolas'),
+('Audio'),
+('TV y Pantallas'),
+
+('Hogar'),
+('Muebles'),
+('Decoración'),
+('Electrodomésticos'),
+('Jardín'),
+('Iluminación'),
+
+('Ropa'),
+('Zapatos'),
+('Bolsos'),
+('Accesorios'),
+('Relojes'),
+('Joyas'),
+
+('Deporte'),
+('Bicicletas'),
+('Fitness'),
+('Camping'),
+('Pesca'),
+('Instrumentos musicales'),
+
+('Libros'),
+('Películas'),
+('Música'),
+('Arte'),
+('Coleccionismo'),
+
+('Juguetes'),
+('Bebés'),
+('Ropa infantil'),
+
+('Mascotas'),
+('Accesorios mascotas'),
+
+('Servicios'),
+('Ofertas de empleo'),
+('Clases'),
+('Reparaciones'),
+
+('Inmuebles'),
+('Alquiler'),
+('Habitaciones'),
+
+('Herramientas'),
+('Material de construcción'),
+('Oficina'),
+('Segunda mano'),
+('Otros');

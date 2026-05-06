@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+env/
+venv/
+.venv/
+ENV/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.coverage
+coverage.xml
+htmlcov/
+docs/_build/
+.tox/
+*.cover
+*.pyc
+
+# IDEs
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+
+# misc
+.env
+.venv
+*.pem
+
+# Entorno / secretos
+.env
+.env.*
+!.env.example
+!.env.production.example.txt
+
+.venv/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/

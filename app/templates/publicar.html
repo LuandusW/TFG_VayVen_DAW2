@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2>Publicar producto</h2>
+
+<form id="form-publicar" method="POST">
+
+    <label>Título</label>
+    <input type="text" id="titulo" name="titulo" required>
+
+    <label>Descripción</label>
+    <textarea id="descripcion" name="descripcion"></textarea>
+
+    <label>Precio (€)</label>
+    <input type="number" id="precio" step="0.01" name="precio" required>
+
+    <label>Categoría</label>
+    <select id="categoria" name="categoria_id" required>
+        {% for c in categorias %}
+        <option value="{{ c.id }}">{{ c.nombre }}</option>
+        {% endfor %}
+    </select>
+
+    <label>URL de imagen</label>
+    <input type="text" id="foto_url" name="foto_url">
+
+    <button type="submit">Publicar</button>
+
+</form>
+
+<p id="resultado"></p>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/publicar.js') }}"></script>
+{% endblock %}
