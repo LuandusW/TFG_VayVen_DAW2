@@ -4,7 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <title>{% block title %}VayVen{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 
 <body>
@@ -12,25 +14,49 @@
     <div class="layout">
 
         <aside class="sidebar">
+
             <h2>VayVen</h2>
 
             <a href="/">Inicio</a>
 
             {% if session.get("user_id") %}
-            <a href="/publicar">Publicar producto</a>
-            <a href="/salir">Salir</a>
+
+                <a href="/perfil">Perfil</a>
+
+                <a href="/publicar">
+                    Publicar producto
+                </a>
+
+                <a href="/salir">
+                    Salir
+                </a>
+
             {% else %}
-            <a href="/login">Login</a>
-            <a href="/registrar">Registrarse</a>
+
+                <a href="/login">
+                    Login
+                </a>
+
+                <a href="/registrar">
+                    Registrarse
+                </a>
+
             {% endif %}
+
         </aside>
 
         <main class="content">
-            {% block content %}{% endblock %}
+
+            {% block content %}
+            {% endblock %}
+
         </main>
 
     </div>
-    {% block scripts %}{% endblock %}
+
+    {% block scripts %}
+    {% endblock %}
+
 </body>
 
 </html>

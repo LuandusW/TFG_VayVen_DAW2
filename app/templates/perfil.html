@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}
+Mi perfil
+{% endblock %}
+
+{% block content %}
+
+<div class="perfil-container">
+
+    <h2>Mi perfil</h2>
+
+    <hr>
+
+    <section class="perfil-info">
+
+        <h3>Información personal</h3>
+
+        <p>
+            <strong>Nombre:</strong>
+            {{ usuario.nombre }}
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            {{ usuario.email }}
+        </p>
+
+        <p>
+            <strong>Rol:</strong>
+            {{ usuario.rol }}
+        </p>
+
+        <p>
+            <strong>Cuenta creada:</strong>
+
+            {% if usuario.creacion %}
+                {{ usuario.creacion.strftime('%d/%m/%Y') }}
+            {% else %}
+                Sin fecha
+            {% endif %}
+
+        </p>
+
+    </section>
+
+    <hr>
+
+    <section class="perfil-productos">
+
+        <h3>Mis productos</h3>
+
+        {% if productos %}
+
+            {% for p in productos %}
+
+                <div class="card-producto">
+
+                    <h4>{{ p.titulo }}</h4>
+
+                    <p>
+                        <strong>Precio:</strong>
+                        {{ p.precio }} €
+                    </p>
+
+                    <p>
+                        <strong>Publicado:</strong>
+
+                        {% if p.creacion %}
+                            {{ p.creacion.strftime('%d/%m/%Y') }}
+                        {% else %}
+                            Sin fecha
+                        {% endif %}
+
+                    </p>
+
+                    <a href="/producto/{{ p.id }}">
+                        Ver producto
+                    </a>
+
+                </div>
+
+                <hr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>No tienes productos publicados.</p>
+
+        {% endif %}
+
+    </section>
+
+    <hr>
+
+    <section class="perfil-compras">
+
+        <h3>Mis compras</h3>
+
+        {% if compras %}
+
+            {% for c in compras %}
+
+                <div class="card-compra">
+
+                    <h4>{{ c.titulo }}</h4>
+
+                    <p>
+                        <strong>Precio:</strong>
+                        {{ c.precio }} €
+                    </p>
+
+                    <p>
+                        <strong>Estado:</strong>
+
+                        {% if c.estado == "pagado" %}
+                            ✅ Pagado
+
+                        {% elif c.estado == "enviado" %}
+                            📦 Enviado
+
+                        {% elif c.estado == "entregado" %}
+                            🎉 Entregado
+
+                        {% elif c.estado == "cancelado" %}
+                            ❌ Cancelado
+
+                        {% else %}
+                            ⏳ Pendiente
+                        {% endif %}
+
+                    </p>
+
+                    <p>
+                        <strong>Fecha compra:</strong>
+
+                        {% if c.creacion %}
+                            {{ c.creacion.strftime('%d/%m/%Y') }}
+                        {% else %}
+                            Sin fecha
+                        {% endif %}
+
+                    </p>
+
+                </div>
+
+                <hr>
+
+            {% endfor %}
+
+        {% else %}
+
+            <p>No has realizado compras todavía.</p>
+
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

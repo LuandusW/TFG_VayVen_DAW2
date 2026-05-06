@@ -18,10 +18,12 @@ def create_app():
     from app.routes.auth import auth_bp
     from app.routes.productos import productos_bp
     from app.routes.compra import compras_bp
+    from app.routes.usuario import perfil_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(productos_bp)
     app.register_blueprint(compras_bp)
+    app.register_blueprint(perfil_bp)
 
     @app.context_processor
     def inject_paypal():

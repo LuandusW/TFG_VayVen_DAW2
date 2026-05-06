@@ -22,12 +22,13 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         },
 
-        onApprove: function (data, actions) {
-            return actions.order.capture().then(function (details) {
+        onApprove: async function (data) {
 
-                console.log("Pago OK:", details);
+            console.log("ORDER ID:", data.orderID);
 
-                fetch("/api/compra", {
+            try {
+
+                const response = await fetch("/crear-venta", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json"
@@ -35,12 +36,23 @@ document.addEventListener("DOMContentLoaded", function () {
                     body: JSON.stringify({
                         producto_id: productoId,
                         paypal_order_id: data.orderID,
-                        status: "completed"
+                        amount: precio
                     })
                 });
 
-                alert("Pago completado");
-            });
+                const result = await response.json();
+
+                console.log("RESULT:", result);
+
+                if (result.success) {
+                    alert("Pago completado");
+                } else {
+                    alert("Error en el pago");
+                }
+
+            } catch (error) {
+                console.error(error);
+            }
         },
 
         onError: function (err) {
