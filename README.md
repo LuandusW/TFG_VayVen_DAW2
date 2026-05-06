@@ -1,3 +1,7 @@
+# Base de datos
+Para este proyecto estoy utilizando Postgres
+https://www.postgresql.org/
+
 # Dependiendo de como tengas instalado python en su local puede ser python -m venv .venv u python3 en mac
 
 # Instalar .Env
